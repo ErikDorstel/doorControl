@@ -56,8 +56,8 @@ void rs422Worker() {
       else if (bytes[port]==-1 && Port[port].available()) { bytes[port]=Port[port].read(); check[port]^=bytes[port]; }
       while (bytes[port]>0 && Port[port].available()) { int n=Port[port].read(); check[port]^=n; bytes[port]--; if (bytes[port]<3) { buffer[port][bytes[port]]=n; }
         if (bytes[port]==0) {
-          if (receive[port]==rfidSym) { int value=(String(buffer[port][2],HEX).toInt()*100)+String(buffer[port][1],HEX).toInt();
-            if (checkRFID(value,port)==1 && check[port]==0) { Log.print(1,"Port: %i RFID read: %i OK\r\n",port,value); command[port]=ledg; doMessage(0,value,port); setPin(port,HIGH); }
+          if (receive[port]==rfidSym) { int value=(String(buffer[port][2],HEX).toInt()*100)+String(buffer[port][1],HEX).toInt(); int m=checkRFID(value,port);
+            if (m>0 && check[port]==0) { for (int o=0;o<8;o++) { if (bitRead(m,o)==1) { Log.print(1,"Port: %i RFID read: %i OK\r\n",o,value); command[o]=ledg; doMessage(0,value,o); setPin(o,HIGH); } } }
             else { Log.print(1,"Port: %i RFID read: %i Checksum: %s denied\r\n",port,value,String(check[port],HEX).c_str()); command[port]=ledr; doMessage(1,value,port); } }
           else if (receive[port]==startSym) { Log.print(1,"Port: %i Reader Started\r\n",port); command[port]=beep1; doMessage(4,0,port); } } } }
 

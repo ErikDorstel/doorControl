@@ -12,7 +12,7 @@ lockedStruct *locked=(lockedStruct*)heap_caps_malloc(sizeof(lockedStruct)*1000,M
 struct profileStruct { uint16_t profile=0xffff; uint8_t accessProfile=0; uint8_t restrictionProfile=0; };
 profileStruct *profile=(profileStruct*)heap_caps_malloc(sizeof(profileStruct)*5000,MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
 
-struct accessProfileStruct { uint8_t ports=0; };
+struct accessProfileStruct { uint8_t ports=0; uint8_t multi=0; };
 accessProfileStruct *accessProfile=(accessProfileStruct*)heap_caps_malloc(sizeof(accessProfileStruct)*256,MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
 
 struct restrictionProfileStruct { uint8_t fromDay=0; uint8_t toDay=0; uint32_t fromEpoch=0; uint32_t toEpoch=0; };
@@ -49,7 +49,7 @@ void dataRead() {
   file=LittleFS.open("/readerInput.struct"); n+=file.read((byte*)readerInput,sizeof(readerInputStruct)*1); file.close();
   Log.print(0,"Data read: %i\r\n",n); }
 
-void testData() {
+void defaultData() {
   dataLength.rfid=5;
     rfid[0].rfid=1234; rfid[0].profile=21;
     rfid[1].rfid=1234; rfid[1].profile=31;
@@ -62,26 +62,26 @@ void testData() {
     profile[0].profile=21; profile[0].accessProfile=0; profile[0].restrictionProfile=0;
     profile[1].profile=31; profile[1].accessProfile=1; profile[1].restrictionProfile=0;
   dataLength.accessProfile=2;
-    accessProfile[0].ports=0b00110011;
-    accessProfile[1].ports=0b11001100;
+    accessProfile[0].ports=0b00110011; accessProfile[0].multi=0;
+    accessProfile[1].ports=0b11001100; accessProfile[1].multi=1;
   dataLength.restrictionProfile=1;
     restrictionProfile[0].fromDay=1; restrictionProfile[0].toDay=7;
     restrictionProfile[0].fromEpoch=0; restrictionProfile[0].toEpoch=86399;
   dataLength.readerInput=1;
     readerInput[0].ports=0b11000000;
-  Log.print(0,"Test Data: read\r\n"); }
+  Log.print(0,"Default Data: read\r\n"); }
 
 void dataErase() {
   dataLength.rfid=0; dataLength.locked=0; dataLength.profile=0; dataLength.accessProfile=0; dataLength.restrictionProfile=0; dataLength.readerInput=0;
   for (int n=0;n<20000;n++) { rfid[n].rfid=0xffff; rfid[n].profile=0; }
   for (int n=0;n<1000;n++) { locked[n].rfid=0xffff; }
   for (int n=0;n<5000;n++) { profile[n].profile=0xffff; profile[n].accessProfile=0; profile[n].restrictionProfile=0; }
-  for (int n=0;n<256;n++) { accessProfile[n].ports=0; }
+  for (int n=0;n<256;n++) { accessProfile[n].ports=0; accessProfile[n].multi=0; }
   for (int n=0;n<256;n++) { restrictionProfile[n].fromDay=0; restrictionProfile[n].toDay=0; restrictionProfile[n].fromEpoch=0; restrictionProfile[n].toEpoch=0; }
   for (int n=0;n<1;n++) { readerInput[n].ports=0; }
   Log.print(0,"Data: erased\r\n"); }
 
-bool checkRFID(int value, int port) {
+uint8_t checkRFID(int value, int port) {
   for (int n=0;n<dataLength.locked;n++) { if (locked[n].rfid==value) { return 0; } }
   int currentDay=dayOfWeek(rtc.now().unixtime());
   uint32_t currentEpoch=epochOfDay(rtc.now().unixtime());
@@ -91,7 +91,9 @@ bool checkRFID(int value, int port) {
         if (rfid[n].profile==profile[o].profile) {
           if (bitRead(accessProfile[profile[o].accessProfile].ports,port)==1) {
             if (currentDay>=restrictionProfile[profile[o].restrictionProfile].fromDay && currentDay<=restrictionProfile[profile[o].restrictionProfile].toDay) {
-              if (currentEpoch>=restrictionProfile[profile[o].restrictionProfile].fromEpoch && currentEpoch<=restrictionProfile[profile[o].restrictionProfile].toEpoch) { return 1; } } } } } } }
+              if (currentEpoch>=restrictionProfile[profile[o].restrictionProfile].fromEpoch && currentEpoch<=restrictionProfile[profile[o].restrictionProfile].toEpoch) {
+                if (accessProfile[profile[o].accessProfile].multi==0) { return pow(2,port); }
+                else { return accessProfile[profile[o].accessProfile].ports; } } } } } } } }
   return 0; }
 
 void doMessage(uint8_t command, uint16_t rfid, uint8_t port) {
