@@ -83,12 +83,14 @@ void doParse() {
     for (int n=0;n<dataLength.locked;n++) { if (locked[n].rfid==m) { Log.print(0,"RFID: %i Locked: 1\r\n",m); } }
     for (int n=0;n<dataLength.rfid;n++) { if (rfid[n].rfid==m) { Log.print(0,"RFID: %i Profile: %i\r\n",m,rfid[n].profile); } } } } }
   else if (cmdLine.startsWith("get prof")) { if (value!="prof" && value!="profile") { int m=value.toInt(); if (m>=0 && m<5000) { for (int o=0;o<dataLength.profile;o++) { if (profile[o].profile==m) {
-    Log.print(0,"Profile: %i Ports: ",m); for (int n=0;n<8;n++) { Log.write(0,bitRead(accessProfile[profile[o].accessProfile].ports,n)+48); } Log.print(0," Multi: %i\r\n",accessProfile[profile[o].accessProfile].multi);
+    Log.print(0,"Profile: %i Ports: ",m); for (int n=0;n<8;n++) { Log.write(0,bitRead(accessProfile[profile[o].accessProfile].ports,n)+48); }
+    Log.print(0," Multi: %i Interval: %i\r\n",accessProfile[profile[o].accessProfile].options & 1,(accessProfile[profile[o].accessProfile].options & 2)>>1);
     Log.print(0,"   fromDay: %i toDay: %i ",restrictionProfile[profile[o].restrictionProfile].fromDay,restrictionProfile[profile[o].restrictionProfile].toDay);
     Log.print(0,"fromEpoch: %i toEpoch: %i\r\n",restrictionProfile[profile[o].restrictionProfile].fromEpoch,restrictionProfile[profile[o].restrictionProfile].toEpoch); } } } } }
-  else if (cmdLine.startsWith("set po")) { if (value!="po" && value!="port") { int n=value.toInt(); if (n>=0 && n<8) { Log.print(0,"Done.\r\n"); setPin(n,HIGH); } } }
+  else if (cmdLine.startsWith("set po")) { if (value!="po" && value!="port") { int n=value.toInt(); if (n>=0 && n<8) { Log.print(0,"Done.\r\n"); setPin(n,HIGH,0); } } }
   else if (cmdLine.startsWith("check rfid")) { int m=cmdLine.substring(cmdLine.indexOf(" ",cmdLine.indexOf(" ")+1)+1).toInt(); int n=value.toInt(); if (m>=0 && m<10000) { if (n>=0 && n<8) {
-    Log.print(0,"RFID: %i Port: %i Ports: ",m,n); int p=checkRFID(m,n); for (int o=0;o<8;o++) { Log.write(0,bitRead(p,o)+48); } Log.print(0,"\r\n"); } } }
+    Log.print(0,"RFID: %i Port: %i Ports: ",m,n); uint16_t p=checkRFID(m,n); for (int o=0;o<8;o++) { Log.write(0,bitRead(p,o)+48); }
+    Log.print(0,"\r\n  Multi: %i Interval: %i\r\n",bitRead(p,8),bitRead(p,9)); } } }
   else if (cmdLine.startsWith("get mess")) { Log.print(0,"Messages stored: %i\r\n",dataLength.message); for (int n=0;n<dataLength.message;n++) {
     Log.print(0,"Epoch: %i Port: %i Command: (%i) ",message[n].epoch,message[n].port,message[n].command); Log.print(0,messageText[message[n].command],message[n].rfid); Log.print(0,"\r\n"); } }
   else if (cmdLine.startsWith("restart port")) { if (value!="port" && value.toInt()<8) { doRestart[value.toInt()]=1; Log.print(0,"Port: %i Reader Restart sent\r\n",value.toInt()); } }
