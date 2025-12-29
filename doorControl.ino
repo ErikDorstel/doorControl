@@ -4,6 +4,7 @@
 #include "Data.h"
 #include "TELNET.h"
 #include "MCP.h"
+#include "Alarm.h"
 #include "RS422.h"
 #include "Flash.h"
 #include "CLI.h"
@@ -16,6 +17,6 @@ void setup() {
   initMCP();
   initRS422();
   readFlash();
-  dataRead(); }
+  dataRead(1); }
 
-void loop() { rs422Worker(); cliWorker(); ethWorker(); telnetWorker(); ntpWorker(); mcpWorker(); }
+void loop() { rs422Worker(); cliWorker(); ethWorker(); telnetWorker(); ntpWorker(); mcpWorker(); alarmWorker(); }

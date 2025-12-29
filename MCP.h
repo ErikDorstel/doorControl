@@ -10,6 +10,7 @@ uint32_t mcpOutTimer[8];
 uint32_t mcpIntervalTimer[8];
 uint8_t mcpIntervalStatus[8];
 uint8_t doAlarm[8];
+uint8_t alarmFlags=0;
 
 void initMCP() {
   Wire.begin();
@@ -40,8 +41,8 @@ bool getPin(int pin) {
   else if (pin<8) { value=mcp.getPin(mcpInPin[pin]-8,B); }
   if (value && mcpInTimer[pin]==0) { mcpInTimer[pin]=millis(); Log.print(1,"Port: %i Input Open\r\n",pin); doMessage(7,0,pin); }
   else if (value && millis()>=mcpInTimer[pin]+10000UL && doAlarm[pin]==2) { mcpInTimer[pin]=millis(); doAlarm[pin]=1; }
-  else if (value && millis()>=mcpInTimer[pin]+600000UL) { mcpInTimer[pin]=millis(); Log.print(1,"Port: %i Input Open Alarm\r\n",pin); doAlarm[pin]=1; doMessage(8,0,pin); }
-  else if ((!value) && mcpInTimer[pin]>0) { mcpInTimer[pin]=0; Log.print(1,"Port: %i Input Closed\r\n",pin); doAlarm[pin]=0; doMessage(9,0,pin); }
+  else if (value && millis()>=mcpInTimer[pin]+600000UL) { mcpInTimer[pin]=millis(); Log.print(1,"Port: %i Input Open Alarm\r\n",pin); doAlarm[pin]=1; bitSet(alarmFlags,pin); doMessage(8,0,pin); }
+  else if ((!value) && mcpInTimer[pin]>0) { mcpInTimer[pin]=0; Log.print(1,"Port: %i Input Closed\r\n",pin); doAlarm[pin]=0; bitClear(alarmFlags,pin); doMessage(9,0,pin); }
   return value; }
 
 void mcpWorker() {

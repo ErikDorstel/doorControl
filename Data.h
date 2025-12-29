@@ -39,7 +39,7 @@ void dataWrite() {
   file=LittleFS.open("/readerInput.struct",FILE_WRITE); n+=file.write((byte*)readerInput,sizeof(readerInputStruct)*1); file.close();
   Log.print(0,"Data written: %i\r\n",n); }
 
-void dataRead() {
+void dataRead(bool clearMessages=0) {
   file=LittleFS.open("/dataLength.struct"); int n=file.read((byte*)&dataLength,sizeof(dataLengthStruct)); file.close();
   file=LittleFS.open("/rfid.struct"); n+=file.read((byte*)rfid,sizeof(rfidStruct)*20000); file.close();
   file=LittleFS.open("/locked.struct"); n+=file.read((byte*)locked,sizeof(lockedStruct)*1000); file.close();
@@ -47,6 +47,7 @@ void dataRead() {
   file=LittleFS.open("/accessProfile.struct"); n+=file.read((byte*)accessProfile,sizeof(accessProfileStruct)*256); file.close();
   file=LittleFS.open("/restrictionProfile.struct"); n+=file.read((byte*)restrictionProfile,sizeof(restrictionProfileStruct)*256); file.close();
   file=LittleFS.open("/readerInput.struct"); n+=file.read((byte*)readerInput,sizeof(readerInputStruct)*1); file.close();
+  if (clearMessages) { dataLength.message=0; }
   Log.print(0,"Data read: %i\r\n",n); }
 
 void defaultData() {
@@ -97,6 +98,7 @@ uint16_t checkRFID(int value, int port) {
   return 0; }
 
 void doMessage(uint8_t command, uint16_t rfid, uint8_t port) {
+  if (dataLength.message==50000) { return; }
   message[dataLength.message].command=command;
   message[dataLength.message].epoch=rtc.now().unixtime();
   message[dataLength.message].rfid=rfid;
