@@ -18,7 +18,7 @@ accessProfileStruct *accessProfile=(accessProfileStruct*)heap_caps_malloc(sizeof
 struct restrictionProfileStruct { uint8_t fromDay=0; uint8_t toDay=0; uint32_t fromEpoch=0; uint32_t toEpoch=0; };
 restrictionProfileStruct *restrictionProfile=(restrictionProfileStruct*)heap_caps_malloc(sizeof(restrictionProfileStruct)*256,MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
 
-struct readerInputStruct { uint8_t ports=0; };
+struct readerInputStruct { uint8_t open=0; uint8_t sabotage=0; };
 readerInputStruct *readerInput=(readerInputStruct*)heap_caps_malloc(sizeof(readerInputStruct)*1,MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
 
 struct messageStruct { uint8_t command=0xff; uint32_t epoch=0; uint16_t rfid=0; uint8_t port=0; };
@@ -69,7 +69,7 @@ void defaultData() {
     restrictionProfile[0].fromDay=1; restrictionProfile[0].toDay=7;
     restrictionProfile[0].fromEpoch=0; restrictionProfile[0].toEpoch=86399;
   dataLength.readerInput=1;
-    readerInput[0].ports=0b11000000;
+    readerInput[0].open=0b11000000; readerInput[0].sabotage=0b11000000;
   Log.print(0,"Default Data: read\r\n"); }
 
 void dataErase() {
@@ -79,7 +79,7 @@ void dataErase() {
   for (int n=0;n<5000;n++) { profile[n].profile=0xffff; profile[n].accessProfile=0; profile[n].restrictionProfile=0; }
   for (int n=0;n<256;n++) { accessProfile[n].ports=0; accessProfile[n].options=0; }
   for (int n=0;n<256;n++) { restrictionProfile[n].fromDay=0; restrictionProfile[n].toDay=0; restrictionProfile[n].fromEpoch=0; restrictionProfile[n].toEpoch=0; }
-  for (int n=0;n<1;n++) { readerInput[n].ports=0; }
+  for (int n=0;n<1;n++) { readerInput[n].open=0; readerInput[n].sabotage=0; }
   Log.print(0,"Data: erased\r\n"); }
 
 uint16_t checkRFID(int value, int port) {

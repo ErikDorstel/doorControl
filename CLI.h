@@ -44,8 +44,9 @@ void doParse() {
     Log.print(0,"   Events Up: %i",upEvents);
     Log.print(0,"   Down: %i\r\n",downEvents);
     Log.print(0,"Reader Ports: "); for (int n=0;n<8;n++) { Log.write(0,bitRead(recvStatus,n)+48); }
-    Log.print(0,"   Input: "); for (int n=0;n<8;n++) { Log.write(0,getPin(n)+48); }
-    Log.print(0,"   Enable: "); for (int n=0;n<8;n++) { Log.write(0,bitRead(readerInput[0].ports,n)+48); } Log.print(0,"\r\n");
+    Log.print(0,"   Input Ports: "); for (int n=0;n<8;n++) { Log.write(0,getPin(n)+48); } Log.print(0,"\r\n");
+    Log.print(0,"Open Alarm: "); for (int n=0;n<8;n++) { Log.write(0,bitRead(readerInput[0].open,n)+48); }
+    Log.print(0,"   Sabotage Alarm: "); for (int n=0;n<8;n++) { Log.write(0,bitRead(readerInput[0].sabotage,n)+48); } Log.print(0,"\r\n");
     Log.print(0,"NTP Hostname: %s",ntpHost.c_str());
     Log.print(0,"   Address: %s",timeServer.toString().c_str());
     Log.print(0,"   Next: %i\r\n",ntpTimer<millis()?0:(ntpTimer - millis())/1000);

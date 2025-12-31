@@ -8,6 +8,8 @@ void alarmWorker() {
     alarmUDP.begin(9999);
     if (alarmUDP.beginPacket("255.255.255.255",9999)==1) {
       alarmUDP.write(ethMAC,6);
-      alarmUDP.write(alarmFlags);
+      for (int n=0;n<8;n++) { alarmUDP.write(alarmFlags[n]); }
       alarmUDP.endPacket();
-      Log.print(1,"Alarm sent Status: %i\r\n",alarmFlags); } } }
+      Log.print(1,"Input Open UDP Status sent: ");
+      for (int n=0;n<8;n++) { Log.write(1,alarmFlags[n]+48); }
+      Log.print(1,"\r\n"); } } }
