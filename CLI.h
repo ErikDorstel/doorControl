@@ -1,7 +1,7 @@
 String cmdLine="";
 
 void help() {
-  Log.print(0,"debug [0-1]\r\n");
+  Log.print(0,"debug [0-2]\r\n");
   Log.print(0,"get version\r\n");
   Log.print(0,"get status\r\n");
   Log.print(0,"clear status\r\n");

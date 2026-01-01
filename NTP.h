@@ -41,7 +41,8 @@ void ntpWorker() {
       ntpUDP.endPacket();
       Log.print(1,"NTP: Request sent to: %s\r\n",ntpHost.c_str()); } }
 
-  if (ntpUDP.parsePacket()==48) {
+  int udpBytes=ntpUDP.parsePacket();
+  if (udpBytes==48) {
     ntpUDP.read(packetBuffer,48);
     uint32_t highWord = word(packetBuffer[40], packetBuffer[41]);
     uint32_t lowWord = word(packetBuffer[42], packetBuffer[43]);
@@ -49,4 +50,4 @@ void ntpWorker() {
     rtc.adjust(epoch);
     ntpTimer=millis()+600000UL;
     Log.print(1,"NTP: Reply received from %s: %i\r\n",ntpHost.c_str(),epoch); }
-  else if (ntpUDP.parsePacket()>0) { ntpUDP.read(); } }
+  else { for (int n=0;n<udpBytes;n++) { ntpUDP.read(); } } }
