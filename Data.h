@@ -69,7 +69,7 @@ void defaultData() {
     restrictionProfile[0].fromDay=1; restrictionProfile[0].toDay=7;
     restrictionProfile[0].fromEpoch=0; restrictionProfile[0].toEpoch=86399;
   dataLength.readerInput=1;
-    readerInput[0].open=0b11000000; readerInput[0].sabotage=0b11000000;
+    readerInput[0].open=0b10000000; readerInput[0].sabotage=0b10000000;
   Log.print(0,"Default Data: read\r\n"); }
 
 void dataErase() {
