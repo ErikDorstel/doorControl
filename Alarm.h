@@ -6,7 +6,7 @@ void alarmWorker() {
   if (checkEth()!=2) { return; }
 
   if (millis()>=alarmTimer || alarmFlag==1) {
-    alarmFlag=0; attempt++; if (attempt>20) { attempt=20; }
+    alarmFlag=0; attempt++; if (attempt>32) { attempt=32; }
     if (attempt<16) { alarmTimer=millis()+2000; } else { alarmTimer=millis()+60000UL; }
     alarmUDP.begin(9999);
     if (alarmUDP.beginPacket("255.255.255.255",9999)==1) {
