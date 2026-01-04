@@ -6,8 +6,8 @@ void alarmWorker() {
   if (checkEth()!=2) { return; }
 
   if (millis()>=alarmTimer || alarmFlag==1) {
-    alarmFlag=0; attempt++; attempt%=20;
-    if (attempt<15) { alarmTimer=millis()+1000; } else { alarmTimer=millis()+60000UL; }
+    alarmFlag=0; attempt++; if (attempt>20) { attempt=20; }
+    if (attempt<16) { alarmTimer=millis()+2000; } else { alarmTimer=millis()+60000UL; }
     alarmUDP.begin(9999);
     if (alarmUDP.beginPacket("255.255.255.255",9999)==1) {
       alarmUDP.write(ethMAC,6);
