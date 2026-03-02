@@ -1,3 +1,4 @@
+#include "Timer.h"
 #include "Log.h"
 #include "Eth.h"
 #include "NTP.h"
@@ -10,6 +11,7 @@
 #include "CLI.h"
 
 void setup() {
+  initTimer();
   initEth();
   initRTC();
   initData();

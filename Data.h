@@ -51,25 +51,21 @@ void dataRead(bool clearMessages=0) {
   Log.print(0,"Data read: %i\r\n",n); }
 
 void defaultData() {
-  dataLength.rfid=5;
-    rfid[0].rfid=1234; rfid[0].profile=21;
-    rfid[1].rfid=1234; rfid[1].profile=31;
-    rfid[2].rfid=3272; rfid[2].profile=21;
-    rfid[3].rfid=3272; rfid[3].profile=31;
-    rfid[4].rfid=1111; rfid[4].profile=21;
-  dataLength.locked=1;
-    locked[0].rfid=1111;
+  dataLength.rfid=2;
+    rfid[0].rfid=3272; rfid[0].profile=10;
+    rfid[1].rfid=1234; rfid[1].profile=20;
+  dataLength.locked=0;
   dataLength.profile=2;
-    profile[0].profile=21; profile[0].accessProfile=0; profile[0].restrictionProfile=0;
-    profile[1].profile=31; profile[1].accessProfile=1; profile[1].restrictionProfile=0;
+    profile[0].profile=10; profile[0].accessProfile=0; profile[0].restrictionProfile=0;
+    profile[1].profile=20; profile[1].accessProfile=1; profile[1].restrictionProfile=0;
   dataLength.accessProfile=2;
-    accessProfile[0].ports=0b00110011; accessProfile[0].options=0b00; // Bit 0: Multi, Bit 1: Interval
-    accessProfile[1].ports=0b11001100; accessProfile[1].options=0b11;
+    accessProfile[0].ports=0b00001111; accessProfile[0].options=0b11; // Bit 0: Multi, Bit 1: Interval
+    accessProfile[1].ports=0b00001011; accessProfile[1].options=0b11;
   dataLength.restrictionProfile=1;
     restrictionProfile[0].fromDay=1; restrictionProfile[0].toDay=7;
     restrictionProfile[0].fromEpoch=0; restrictionProfile[0].toEpoch=86399;
   dataLength.readerInput=1;
-    readerInput[0].open=0b10000000; readerInput[0].sabotage=0b10000000;
+    readerInput[0].open=0b00000001; readerInput[0].sabotage=0b00000001;
   Log.print(0,"Default Data: read\r\n"); }
 
 void dataErase() {

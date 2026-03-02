@@ -10,7 +10,7 @@ void getFlash() {
   Log.print(0,"Eth GW: %s\r\n",flash.getString("ethGW","192.168.100.1").c_str());
   Log.print(0,"Eth DNS: %s\r\n",flash.getString("ethDNS","192.168.100.1").c_str());
   Log.print(0,"Eth NM: %s\r\n",flash.getString("ethNM","255.255.255.0").c_str());
-  Log.print(0,"NTP Hostname: %s\r\n",String(flash.getString("ntpHost","")).c_str());
+  Log.print(0,"NTP Hostname: %s\r\n",String(flash.getString("ntpHost","pool.ntp.org")).c_str());
   Log.print(0,"TELNET Password: xxxx\r\n");
   flash.end(); }
 
