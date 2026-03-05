@@ -30,26 +30,26 @@ void initRS422() {
   Port[7].begin(9600,SWSERIAL_8N1,42,47,false); }
 
 void rs422Worker() {
-  static uint32_t rs422SendTimer[8], rs422RecvTimer[8];
+  static uint64_t rs422SendTimer[8],rs422RecvTimer[8];
   static int command[8]={rfidSym}, bytes[8]={0}, receive[8]={0}, check[8]={0}, buffer[8][3]={0};
 
   for (int port=0;port<8;port++) {
 
-    if (millis()>=rs422SendTimer[port]) {
+    if (timerRead(hwTimer)>=rs422SendTimer[port]) {
       if (doAlarm[port]==1) { command[port]=ledr; doAlarm[port]=2; }
       if (doRestart[port]==1) { command[port]=restartSym; doRestart[port]=0; }
       Port[port].write(command[port]);
-      if (command[port]==ledg) { command[port]=beep1; rs422SendTimer[port]=millis()+100; }
-      else if (command[port]==ledr) { command[port]=beep3; rs422SendTimer[port]=millis()+100; }
-      else if (command[port]==beep1) { command[port]=rfidSym; rs422SendTimer[port]=millis()+900; }
-      else if (command[port]==beep3) { command[port]=rfidSym; rs422SendTimer[port]=millis()+900; }
-      else if (command[port]==rfidSym) { command[port]=ledy; rs422SendTimer[port]=millis()+100; }
-      else { command[port]=rfidSym; rs422SendTimer[port]=millis()+100; } }
+      if (command[port]==ledg) { command[port]=beep1; rs422SendTimer[port]=timerRead(hwTimer)+100000ULL; }
+      else if (command[port]==ledr) { command[port]=beep3; rs422SendTimer[port]=timerRead(hwTimer)+100000ULL; }
+      else if (command[port]==beep1) { command[port]=rfidSym; rs422SendTimer[port]=timerRead(hwTimer)+900000ULL; }
+      else if (command[port]==beep3) { command[port]=rfidSym; rs422SendTimer[port]=timerRead(hwTimer)+900000ULL; }
+      else if (command[port]==rfidSym) { command[port]=ledy; rs422SendTimer[port]=timerRead(hwTimer)+100000ULL; }
+      else { command[port]=rfidSym; rs422SendTimer[port]=timerRead(hwTimer)+100000ULL; } }
 
     while (Port[port].available()) {
       if (bytes[port]==0) {
         receive[port]=Port[port].peek();
-        if (receive[port]==0x1) { Port[port].read(); rs422RecvTimer[port]=millis()+10000; }
+        if (receive[port]==0x1) { Port[port].read(); rs422RecvTimer[port]=timerRead(hwTimer)+10000000ULL; }
         else if (receive[port]==rfidSym) { Port[port].read(); bytes[port]=-1; check[port]=rfidSym; }
         else if (receive[port]==startSym) { Port[port].read(); bytes[port]=-1; }
         else { Port[port].read(); } }
@@ -61,5 +61,5 @@ void rs422Worker() {
             else { Log.print(1,"Port: %i RFID read: %i Checksum: %s denied\r\n",port,value,String(check[port],HEX).c_str()); command[port]=ledr; doMessage(1,value,port); } }
           else if (receive[port]==startSym) { Log.print(1,"Port: %i Reader Started\r\n",port); command[port]=beep1; doMessage(4,0,port); } } } }
 
-    if (millis()>=rs422RecvTimer[port] && bitRead(recvStatus,port)==1) { bitClear(recvStatus,port); Log.print(1,"Port: %i Reader Offline\r\n",port); doMessage(2,0,port); }
-    if (millis()<rs422RecvTimer[port] && bitRead(recvStatus,port)==0) { bitSet(recvStatus,port); Log.print(1,"Port: %i Reader Online\r\n",port); doMessage(3,0,port); } } }
+    if (timerRead(hwTimer)>=rs422RecvTimer[port] && bitRead(recvStatus,port)==1) { bitClear(recvStatus,port); Log.print(1,"Port: %i Reader Offline\r\n",port); doMessage(2,0,port); }
+    if (timerRead(hwTimer)<rs422RecvTimer[port] && bitRead(recvStatus,port)==0) { bitSet(recvStatus,port); Log.print(1,"Port: %i Reader Online\r\n",port); doMessage(3,0,port); } } }

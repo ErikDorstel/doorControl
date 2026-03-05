@@ -55,8 +55,8 @@ void configEth() {
     Ethernet.begin(ethMAC,ethIP_arr,ethDNS_arr,ethGW_arr,ethNM_arr); Log.print(0,"Ethernet Static IP: %s\r\n",Ethernet.localIP().toString().c_str()); } }
 
 void ethWorker() {
-  static uint64_t ethTimer=millis()+1000; static uint8_t ethOld=0;
-  if (millis()>=ethTimer) { ethTimer=millis()+10000;
+  static uint64_t ethTimer=timerRead(hwTimer)+1000000ULL; static uint8_t ethOld=0;
+  if (timerRead(hwTimer)>=ethTimer) { ethTimer=timerRead(hwTimer)+10000000ULL;
     uint8_t ethNew=checkEth();
     if (ethNew==0 && ethNew!=ethOld) { ethOld=ethNew; downEvents++; Log.print(0,"Ethernet Link: Down   IP: Down\r\n"); }
     if (ethNew==1 && ethNew!=ethOld) { ethOld=ethNew; Log.print(0,"Ethernet Link: Up   IP: Down\r\n"); }

@@ -6,7 +6,7 @@ EthernetUDP ntpUDP;
 RTC_DS3231 rtc;
 
 String ntpHost="pool.ntp.org";
-uint32_t ntpTimer=0;
+uint64_t ntpTimer=0;
 IPAddress timeServer;
 uint8_t packetBuffer[48];
 
@@ -22,7 +22,7 @@ void ntpNow() { ntpTimer=0; }
 void ntpWorker() {
   if (checkEth()!=2) { return; }
 
-  if (millis()>=ntpTimer) { ntpTimer=millis()+5000;
+  if (timerRead(hwTimer)>=ntpTimer) { ntpTimer=timerRead(hwTimer)+5000000ULL;
     dns.begin(Ethernet.dnsServerIP());
     if (dns.getHostByName(ntpHost.c_str(),timeServer,1500)!=1) { return; }
     ntpUDP.begin(8888);
@@ -48,6 +48,6 @@ void ntpWorker() {
     uint32_t lowWord = word(packetBuffer[42], packetBuffer[43]);
     uint32_t epoch = (highWord << 16 | lowWord) - 2208988800UL;
     rtc.adjust(epoch);
-    ntpTimer=millis()+600000UL;
+    ntpTimer=timerRead(hwTimer)+600000000ULL;
     Log.print(1,"NTP: Reply received from %s: %i\r\n",ntpHost.c_str(),epoch); }
   else { for (int n=0;n<udpBytes;n++) { ntpUDP.read(); } } }

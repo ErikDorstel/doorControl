@@ -25,8 +25,8 @@ void initTELNET() {
   Log.printTelnet=printTelnet; }
 
 void telnetWorker() {
-  static uint32_t telnetTimer=millis()+1111;
-  if (millis()>=telnetTimer) { telnetTimer=millis()+1111;
+  static uint64_t telnetTimer=timerRead(hwTimer)+1111000ULL;
+  if (timerRead(hwTimer)>=telnetTimer) { telnetTimer=timerRead(hwTimer)+1111000ULL;
       EthernetClient newSession=telnetServer.accept();
 
     if (((!telnetSession) || (!isAuth)) && newSession) {

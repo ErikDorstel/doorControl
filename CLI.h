@@ -49,7 +49,7 @@ void doParse() {
     Log.print(0,"   Sabotage Alarm: "); for (int n=0;n<8;n++) { Log.write(0,bitRead(readerInput[0].sabotage,n)+48); } Log.print(0,"\r\n");
     Log.print(0,"NTP Hostname: %s",ntpHost.c_str());
     Log.print(0,"   Address: %s",timeServer.toString().c_str());
-    Log.print(0,"   Next: %i\r\n",ntpTimer<millis()?0:(ntpTimer - millis())/1000);
+    Log.print(0,"   Next: %i\r\n",ntpTimer<timerRead(hwTimer)?0:(uint32_t)(ntpTimer - timerRead(hwTimer))/1000000UL);
     Log.print(0,"NTP Epoch: %i",rtc.now().unixtime());
     Log.print(0,"   Day: %i",dayOfWeek(rtc.now().unixtime()));
     Log.print(0,"   Daily Epoch: %i\r\n",epochOfDay(rtc.now().unixtime()));
@@ -63,7 +63,7 @@ void doParse() {
     Log.print(0,"PSRAM Total: %d",ESP.getPsramSize());
     Log.print(0,"   Free: %d",ESP.getFreePsram());
     Log.print(0,"   Used: %d\r\n",ESP.getPsramSize()-ESP.getFreePsram());
-    Log.print(0,"Uptime: %i days %s hours\r\n",millis()/86400000,String((double)(millis()%86400000)/3600000.0,2).c_str()); }
+    Log.print(0,"Uptime: %i days %s hours\r\n",(uint32_t)(timerRead(hwTimer)/86400000000ULL),String((double)((uint32_t)(timerRead(hwTimer)%86400000000ULL))/3600000000.0,2).c_str()); }
   else if (cmdLine.startsWith("clear stat")) { upEvents=0; downEvents=0; Log.print(0,"Statistics cleared\r\n"); }
   else if (cmdLine.startsWith("get conf")) {
     Log.print(0,"Eth DHCP: %i\r\n",ethDHCP);
