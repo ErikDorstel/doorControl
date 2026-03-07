@@ -63,7 +63,7 @@ void doParse() {
     Log.print(0,"PSRAM Total: %d",ESP.getPsramSize());
     Log.print(0,"   Free: %d",ESP.getFreePsram());
     Log.print(0,"   Used: %d\r\n",ESP.getPsramSize()-ESP.getFreePsram());
-    Log.print(0,"Uptime: %i days %s hours\r\n",(uint32_t)(timerRead(hwTimer)/86400000000ULL),String((double)((uint32_t)(timerRead(hwTimer)%86400000000ULL))/3600000000.0,2).c_str()); }
+    Log.print(0,"Uptime: %i days %.2f hours\r\n",(uint32_t)(timerRead(hwTimer)/86400000000ULL),(timerRead(hwTimer)%86400000000ULL)/3600000000.0); }
   else if (cmdLine.startsWith("clear stat")) { upEvents=0; downEvents=0; Log.print(0,"Statistics cleared\r\n"); }
   else if (cmdLine.startsWith("get conf")) {
     Log.print(0,"Eth DHCP: %i\r\n",ethDHCP);
